@@ -3,6 +3,7 @@ import App from "../App";
 import Event from "../pages/Event";
 import { Login } from "../pages/Login";
 import { FC, PropsWithChildren } from "react";
+import { useTypedSelector } from "../hooks/useTypedSelector";
 
 export enum RouteNames {
     LOGIN = 'login',
@@ -10,7 +11,7 @@ export enum RouteNames {
 }
 
 export const ProtectedRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
-    const isAuth = false
+    const isAuth = useTypedSelector(state => state.auth.isAuth)
 
     return isAuth ? children : <Navigate to={RouteNames.LOGIN} />
 }
