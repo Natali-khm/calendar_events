@@ -1,10 +1,22 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import { Layout } from 'antd';
+import { useTypedDispatch } from './hooks/useTypedDispatch';
+import { authAction } from './store/reducers/auth.slice';
+import { IUser } from './models/IUser';
 const { Content } = Layout;
 
 const App: FC = () => {
+  const dispatch = useTypedDispatch()
+
+  useEffect(() => {
+    if (localStorage.getItem('auth')) {
+      dispatch(authAction.setAuth(true))
+      dispatch(authAction.setUserData({ username: localStorage.getItem('username' || '') } as IUser))
+    }
+  }, [])
+
   return (
     <Layout>
       <Navbar />

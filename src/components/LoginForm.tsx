@@ -1,9 +1,8 @@
-import type { FormProps } from 'antd';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { rules } from '../utils/rules';
 import { authThunks } from '../store/reducers/auth.slice';
 import { useTypedDispatch } from '../hooks/useTypedDispatch';
-import { IUser } from '../store/reducers/types';
+import { IUser } from '../models/IUser';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { ChangeEvent, useState } from 'react';
 

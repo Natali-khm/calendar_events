@@ -3,6 +3,8 @@ import { Flex, Layout } from 'antd';
 import { Menu } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useTypedSelector } from '../hooks/useTypedSelector';
+import { useTypedDispatch } from '../hooks/useTypedDispatch';
+import { authThunks } from '../store/reducers/auth.slice';
 const { Header, } = Layout;
 
 interface MenuItem {
@@ -12,13 +14,12 @@ interface MenuItem {
 }
 
 
-
-
 const Navbar: FC = () => {
     const navigate = useNavigate()
 
     const isAuth = useTypedSelector(state => state.auth.isAuth)
-
+    const username = useTypedSelector(state => state.auth.user?.username)
+    const dispatch = useTypedDispatch()
 
     const loggedOutIems: MenuItem[] = [
         {
@@ -31,7 +32,7 @@ const Navbar: FC = () => {
         {
             label: 'Log out',
             key: 'logOut',
-            onClick: () => { console.log('log out'); }
+            onClick: () => { dispatch(authThunks.logout()) }
         }
     ];
 
@@ -39,7 +40,7 @@ const Navbar: FC = () => {
         <Layout>
             <Header>
                 <Flex justify='end' style={{ height: '100%' }}>
-                    {isAuth && <div style={{ color: 'rgba(255, 255, 255, 0.65)' }}>My Name</div>}
+                    {isAuth && <div style={{ color: 'rgba(255, 255, 255, 0.65)' }}>{username}</div>}
                     <Menu theme='dark' selectable={false}
                         items={isAuth ? loggedInItems : loggedOutIems}
                         style={{ display: 'flex', alignItems: 'center' }}>

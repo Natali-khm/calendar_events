@@ -1,7 +1,16 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { IUser } from "./types";
+import { eventsThunks } from "./event.slice";
+import {
+  PayloadAction,
+  createSlice,
+  isFulfilled,
+  isPending,
+  isRejected,
+} from "@reduxjs/toolkit";
+import { IUser } from "../../models/IUser";
 import { createTypedAsyncThunk } from "../createAppAsyncThunk";
-import axios, { AxiosError, AxiosResponse, isAxiosError } from "axios";
+import { AxiosResponse } from "axios";
+import UsersApi from "../../api/users.api";
+import { thunkTryCatch } from "../../utils/thunkTryCatch";
 
 const slice = createSlice({
   name: "auth",
@@ -15,8 +24,8 @@ const slice = createSlice({
     setAuth: (state, action: PayloadAction<boolean>) => {
       state.isAuth = action.payload;
     },
-    setisLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+    setUserData: (state, action: PayloadAction<IUser>) => {
+      state.user = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -28,10 +37,21 @@ const slice = createSlice({
           state.error = null;
         }
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(logout.fulfilled, (state, action) => {
+        state.isAuth = false;
+        state.user = null;
+      })
+      .addMatcher(pending, (state) => {
+        state.isLoading = true;
+      })
+      .addMatcher(fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addMatcher(rejected, (state, action) => {
         if (action.payload) {
           state.error = action.payload;
         }
+        state.isLoading = false;
       });
   },
 });
@@ -39,14 +59,10 @@ const slice = createSlice({
 const login = createTypedAsyncThunk<IUser, IUser>(
   "auth/login",
   async (arg, thunkAPI) => {
-    const { dispatch, rejectWithValue } = thunkAPI;
-
-    try {
-      dispatch(authAction.setisLoading(true));
-
+    return thunkTryCatch(thunkAPI, async () => {
       const response: AxiosResponse<IUser[]> = await new Promise((res) => {
         setTimeout(() => {
-          const response = axios.get<IUser[]>("./users.json");
+          const response = UsersApi.getUsers();
           res(response);
         }, 1000);
       });
@@ -61,23 +77,41 @@ const login = createTypedAsyncThunk<IUser, IUser>(
       } else {
         throw new Error("Invalid username or password");
       }
-    } catch (e) {
-      const err = e as Error | AxiosError<{ error: string }>;
-      if (isAxiosError(err)) {
-        return rejectWithValue(
-          err.response?.data
-            ? (err.response.data as { error: string }).error
-            : err.message
-        );
-      } else {
-        return rejectWithValue(err.message);
-      }
-    } finally {
-      dispatch(authAction.setisLoading(false));
-    }
+    });
   }
 );
 
+const logout = createTypedAsyncThunk("auth/logout", async (arg, thunkAPI) => {
+  return thunkTryCatch(thunkAPI, async () => {
+    await new Promise((res) => {
+      setTimeout(() => {
+        localStorage.removeItem("auth");
+        localStorage.removeItem("username");
+        res("ok");
+      }, 500);
+    });
+  });
+});
+
 export const authReducer = slice.reducer;
 export const authAction = slice.actions;
-export const authThunks = { login };
+export const authThunks = { login, logout };
+
+const pending = isPending(
+  authThunks.login,
+  authThunks.logout,
+  eventsThunks.getGuests,
+  eventsThunks.addEvent
+);
+const fulfilled = isFulfilled(
+  authThunks.login,
+  authThunks.logout,
+  eventsThunks.getGuests,
+  eventsThunks.addEvent
+);
+const rejected = isRejected(
+  authThunks.login,
+  authThunks.logout,
+  eventsThunks.getGuests,
+  eventsThunks.addEvent
+);
