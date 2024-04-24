@@ -101,17 +101,20 @@ const pending = isPending(
   authThunks.login,
   authThunks.logout,
   eventsThunks.getGuests,
-  eventsThunks.addEvent
+  eventsThunks.addEvent,
+  eventsThunks.getEvents
 );
 const fulfilled = isFulfilled(
   authThunks.login,
   authThunks.logout,
   eventsThunks.getGuests,
-  eventsThunks.addEvent
+  eventsThunks.addEvent,
+  eventsThunks.getEvents
 );
 const rejected = isRejected(
   authThunks.login,
   authThunks.logout,
   eventsThunks.getGuests,
-  eventsThunks.addEvent
+  eventsThunks.addEvent,
+  eventsThunks.getEvents
 );

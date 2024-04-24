@@ -20,12 +20,15 @@ const slice = createSlice({
       })
       .addCase(addEvent.fulfilled, (state, action) => {
         state.events = action.payload;
+      })
+      .addCase(getEvents.fulfilled, (state, action) => {
+        state.events = action.payload;
       });
   },
 });
 
 const getGuests = createTypedAsyncThunk<IUser[]>(
-  "event/getCards",
+  "event/getGuests",
   async (arg, thunkAPI) => {
     return thunkTryCatch(thunkAPI, async () => {
       const response: AxiosResponse<IUser[]> = await new Promise((res) => {
@@ -57,5 +60,28 @@ const addEvent = createTypedAsyncThunk<IEvent[], IEvent>(
   }
 );
 
+const getEvents = createTypedAsyncThunk(
+  "event/getEvents",
+  async (arg, thunkAPI) => {
+    const { getState } = thunkAPI;
+    const state = getState();
+    return thunkTryCatch(thunkAPI, async () => {
+      const response = await new Promise((res) => {
+        setTimeout(() => {
+          const eventsJson = localStorage.getItem("events") || "[]";
+          const events = JSON.parse(eventsJson) as IEvent[];
+          const currentUserEvents = events.filter(
+            (e) =>
+              e.author === state.auth.user?.username ||
+              e.guest === state.auth.user?.username
+          );
+          res(currentUserEvents);
+        }, 1000);
+      });
+      return response;
+    });
+  }
+);
+
 export const eventReducer = slice.reducer;
-export const eventsThunks = { getGuests, addEvent };
+export const eventsThunks = { getGuests, addEvent, getEvents };

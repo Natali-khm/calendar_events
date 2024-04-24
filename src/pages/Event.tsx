@@ -15,6 +15,7 @@ const Event: FC = () => {
 
     useEffect(() => {
         dispatch(eventsThunks.getGuests())
+        dispatch(eventsThunks.getEvents())
     }, [])
 
     const submitForm = (event: IEvent) => {
