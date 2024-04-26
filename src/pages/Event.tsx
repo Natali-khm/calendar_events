@@ -9,10 +9,12 @@ import { IEvent } from '../models/IEvent';
 
 const Event: FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     const dispatch = useTypedDispatch()
     const guests = useTypedSelector(state => state.event.guests)
     const events = useTypedSelector(state => state.event.events)
-
+    const isLoading = useTypedSelector(state => state.auth.isLoading)
+    
     useEffect(() => {
         dispatch(eventsThunks.getGuests())
         dispatch(eventsThunks.getEvents())
@@ -22,12 +24,12 @@ const Event: FC = () => {
         dispatch(eventsThunks.addEvent(event))
         setIsModalOpen(false)
     }
+
     return (
         <>
-       {JSON.stringify(events)}
-            <EventCalendar events={[]} />
+            <EventCalendar  events={events}  />
             <Flex justify='center'>
-                <Button onClick={() => setIsModalOpen(true)}>Add an event</Button>
+                <Button onClick={() => setIsModalOpen(true)} disabled={isLoading}>Add an event</Button>
             </Flex>
             <Modal title='Add an event' open={isModalOpen} footer={null} onCancel={() => setIsModalOpen(false)}>
                 <EventForm guests={guests} submit={submitForm} />

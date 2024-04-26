@@ -70,6 +70,7 @@ const login = createTypedAsyncThunk<IUser, IUser>(
       const mockUser = response.data.find(
         (u) => u.username === arg.username && u.password === arg.password
       );
+
       if (mockUser) {
         localStorage.setItem("auth", "true");
         localStorage.setItem("username", mockUser.username);

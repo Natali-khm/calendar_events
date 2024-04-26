@@ -17,15 +17,19 @@ const EventForm: FC<EventFormProps> = ({ guests, submit }) => {
         date: '',
         description: ''
     })
+    const [form] = Form.useForm()
 
     const formedGuests = guests.map(g => ({ value: g.username, label: g.username }))
+
     const author = useTypedSelector(state => state.auth.user?.username)
+
     const selectDate: DatePickerProps['onChange'] = (date, dateString) => {
         typeof dateString === 'string' && setEvent({ ...event, date: dateString })
     };
-    
+
     const submitForm = () => {
-        author && submit({...event, author})
+        author && submit({ ...event, author })
+        form.resetFields()
     }
 
     return (
@@ -36,6 +40,7 @@ const EventForm: FC<EventFormProps> = ({ guests, submit }) => {
             style={{ maxWidth: 600 }}
             onFinish={submitForm}
             autoComplete="off"
+            form={form}
         >
             <Form.Item
                 label="Event description"
@@ -48,7 +53,7 @@ const EventForm: FC<EventFormProps> = ({ guests, submit }) => {
             <Form.Item
                 label="Event date"
                 name="date"
-                rules={[rules.required()]}
+                rules={[rules.required(), rules.isDateAfter("You can't create an event in the past"),]}
             >
                 <DatePicker onChange={selectDate} />
             </Form.Item>
@@ -69,7 +74,7 @@ const EventForm: FC<EventFormProps> = ({ guests, submit }) => {
                     </Button>
                 </Flex>
             </Form.Item>
-        </Form>
+        </Form >
     )
 }
 

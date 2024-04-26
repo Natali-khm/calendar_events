@@ -1,8 +1,7 @@
-import { Navigate, createBrowserRouter, createHashRouter, useRouteError } from "react-router-dom";
+import { Navigate, createHashRouter } from "react-router-dom";
 import App from "../App";
 import Event from "../pages/Event";
 import { Login } from "../pages/Login";
-import { FC, PropsWithChildren } from "react";
 import { useTypedSelector } from "../hooks/useTypedSelector";
 
 export enum RouteNames {
@@ -16,7 +15,7 @@ export const ProtectedRoute: React.FC<{ children: JSX.Element }> = ({ children }
     return isAuth ? children : <Navigate to={RouteNames.LOGIN} />
 }
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
     {
         path: RouteNames.EVENT,
         element: <App />,

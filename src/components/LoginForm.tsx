@@ -13,8 +13,8 @@ const LoginForm = () => {
     const isLoading = useTypedSelector(state => state.auth.isLoading)
     const error = useTypedSelector(state => state.auth.error)
 
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('user')
+    const [password, setPassword] = useState('123')
 
     const submit = () => {
         dispatch(authThunks.login({ username, password }))
@@ -33,6 +33,7 @@ const LoginForm = () => {
             <Form.Item<IUser>
                 label="Username"
                 name="username"
+                initialValue={username}
                 rules={[rules.required('Please input your username!')]}
             >
                 <Input value={username}
@@ -42,6 +43,7 @@ const LoginForm = () => {
             <Form.Item
                 label="Password"
                 name="password"
+                initialValue={password}
                 rules={[rules.required('Please input your password!')]}
             >
                 <Input.Password value={password}

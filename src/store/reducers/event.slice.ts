@@ -1,16 +1,17 @@
 import { IEvent } from "./../../models/IEvent";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {  createSlice } from "@reduxjs/toolkit";
 import { IUser } from "../../models/IUser";
 import { createTypedAsyncThunk } from "../createAppAsyncThunk";
 import { AxiosResponse } from "axios";
 import UsersApi from "../../api/users.api";
 import { thunkTryCatch } from "../../utils/thunkTryCatch";
+import { authThunks } from "./auth.slice";
 
 const slice = createSlice({
   name: "event",
   initialState: {
     guests: [] as IUser[],
-    events: null as IEvent[] | null,
+    events: [] as IEvent[],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -18,12 +19,15 @@ const slice = createSlice({
       .addCase(getGuests.fulfilled, (state, action) => {
         state.guests = action.payload;
       })
-      .addCase(addEvent.fulfilled, (state, action) => {
+      .addCase(addEvent.fulfilled, (state, action) => {      
         state.events = action.payload;
       })
       .addCase(getEvents.fulfilled, (state, action) => {
         state.events = action.payload;
-      });
+      }).addCase(authThunks.logout.fulfilled, (state, action) => {
+        state.guests = []
+        state.events = []
+      })
   },
 });
 

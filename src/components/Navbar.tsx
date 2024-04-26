@@ -1,6 +1,5 @@
 import { FC } from 'react'
-import { Flex, Layout } from 'antd';
-import { Menu } from 'antd';
+import { Flex, Layout, Menu } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { useTypedDispatch } from '../hooks/useTypedDispatch';
